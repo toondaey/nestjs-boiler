@@ -1,0 +1,50 @@
+version: '3.7'
+
+networks:
+  webnet:
+volumes:
+  mysqldb:
+    driver: local
+  redisdb:
+    driver: local
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+      - 9229:9229
+    command: npm run start:debug
+    env_file:
+      - .env
+    networks:
+      - webnet
+    depends_on:
+      - redis
+      - mysql
+  redis:
+    restart: unless-stopped
+    image: redis:5
+    volumes:
+      - redisdb:/data
+    networks:
+      - webnet
+  mysql:
+    restart: unless-stopped
+    image: mysql:5.7
+    networks:
+      - webnet
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - 3306:3306
+    volumes:
+      - mysqldb:/var/lib/mysql

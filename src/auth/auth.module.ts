@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { UsersModule } from 'src/user/users.module';
+import { UsersModule } from '../user/users.module';
 import { LoginController } from './login/login.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 import { RegisterController } from './register/register.controller';

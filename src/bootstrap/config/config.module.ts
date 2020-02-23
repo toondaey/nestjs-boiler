@@ -1,16 +1,16 @@
 import app from './configurations/app';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import database from './configurations/database';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
     imports: [
-        ConfigModule.forRoot({ load: [database, app], isGlobal: true }),
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [database, app],
+            envFilePath: '.env' //`.env.${process.env.NODE_ENV || 'development'}` Considerations for testing purposes
+        }),
     ],
     exports: [ConfigModule]
 })
-export class ConfigurationModule {
-    constructor(private readonly configService: ConfigService) {
-        //
-    }
-}
+export class ConfigurationModule {}

@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
-import { UserService } from 'src/user/user.service';
-import { UserResponse } from 'src/user/user.entity';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UserService } from '../../user/user.service';
+import { UserResponse } from '../../user/user.entity';
+import { CreateUserDto } from '../../user/dto/create-user.dto';
 import { Controller, UseInterceptors, ClassSerializerInterceptor, Post, Body, HttpException } from '@nestjs/common';
 
 @Controller('auth')

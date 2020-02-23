@@ -1,9 +1,9 @@
-import { User } from 'src/user/user.entity';
 import { Injectable } from '@nestjs/common';
+import { User } from '../../user/user.entity';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from 'src/user/user.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class TokenRefreshStrategy extends PassportStrategy(Strategy, 'bearer-refresh') {

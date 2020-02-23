@@ -1,7 +1,6 @@
-import { hash, genSalt } from 'bcrypt';
 import { Exclude, Type } from 'class-transformer';
 import { User as UserInterface } from './interfaces/user.interface';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User implements UserInterface {
@@ -32,24 +31,16 @@ export class User implements UserInterface {
     @Exclude()
     @UpdateDateColumn({ nullable: true })
     updated_at?: Date;
-
-    @BeforeInsert()
-    async hashPassword() {
-        const salt = await genSalt(10);
-        const hashed = await hash(this.password, salt);
-
-        this.password = hashed;
-    }
 }
 
 export class UserResponse {
-    message: string;
+    message?: string;
     @Type(() => User)
     data: User;
 }
 
 export class UsersResponse {
-    message: string;
+    message?: string;
     @Type(() => User)
     data: Array<User>
 }

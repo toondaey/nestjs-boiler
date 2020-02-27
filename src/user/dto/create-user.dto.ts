@@ -1,5 +1,5 @@
 import { User as  UserInterface } from '../interfaces/user.interface';
-import { IsString, IsNotEmpty, IsEmail, MaxLength, MinLength, } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto implements UserInterface {
     @IsString()

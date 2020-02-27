@@ -14,17 +14,27 @@ export class DatabaseModule {
                     useFactory: async (configService: ConfigService) => {
                         const defaultConnection = configService.get('database.default');
 
-                        return {
+                        const config = {
                             type: defaultConnection,
-                            host: configService.get(`database.connections.${defaultConnection}.host`, 'localhost'),
-                            port: configService.get(`database.connections.${defaultConnection}.port`, 3306),
+                            host: configService.get(`database.connections.${defaultConnection}.host`),
+                            port: configService.get(`database.connections.${defaultConnection}.port`),
                             username: configService.get(`database.connections.${defaultConnection}.user`),
                             password: configService.get(`database.connections.${defaultConnection}.password`),
-                            synchronize: configService.get(`database.connections.${defaultConnection}.synchronize`, true),
-                            database: configService.get(`database.connections.${defaultConnection}.database`, 'alice'),
-                            insecureAuth: configService.get(`database.connections.${defaultConnection}.insecureAuth`, false),
+                            synchronize: configService.get(`database.connections.${defaultConnection}.synchronize`),
+                            database: configService.get(`database.connections.${defaultConnection}.database`),
+                            insecureAuth: configService.get(`database.connections.${defaultConnection}.insecureAuth`),
+                            migrationsRun: true,
                             ...options,
                         };
+
+                        // Clean up configuration.
+                        for (const key in config) {
+                            if (config[key] === undefined) {
+                                delete config[key];
+                            }
+                        }
+
+                        return config;
                     }
                 }),
             ]

@@ -10,9 +10,10 @@ export class RegisterController {
         //
     }
 
-    @UseInterceptors(ClassSerializerInterceptor)
     @Post('register')
+    @UseInterceptors(ClassSerializerInterceptor)
     async create(@Body() body: CreateUserDto): Promise<UserResponse> {
+        console.log(body);
         const user = this.userService.create(body);
 
         if (await this.userService.findByEmail(body.email)) {

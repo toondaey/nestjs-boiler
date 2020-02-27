@@ -2,15 +2,17 @@ import * as helmet from 'helmet';
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import * as compression from 'compression';
+import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import * as rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: true });
-    const config = app.get('ConfigService');
+    const configService: ConfigService = app.get<ConfigService>('ConfigService');
     // Validation configuration
     app.useGlobalPipes(
         new ValidationPipe({
+            disableErrorMessages: configService.get('app.env') === 'production',
             whitelist: true,
         })
     );
@@ -26,6 +28,6 @@ async function bootstrap() {
         }),
     );
 
-    await app.listen(config.get('app.port'));
+    return {app, configService};
 }
-bootstrap();
+bootstrap().then(async ({ app, configService }) => await app.listen(configService.get('app.port')));

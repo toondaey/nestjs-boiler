@@ -39,7 +39,7 @@ export class AuthService {
     async validateUser(email: string, password: string): Promise<User> {
         const user = await this.userService.findByEmail(email);
 
-        return await bcrypt.compare(password, user.password) && user;
+        return user && await bcrypt.compare(password, user.password) && user;
     }
 
     async login(user: User): Promise<TokenResponse> {

@@ -5,14 +5,15 @@
   "author": "",
   "license": "MIT",
   "scripts": {
+    "commit": "commita",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "prestart": "NODE_ENV=production",
+    "prestart": "cross-env NODE_ENV=production",
     "start": "nest start",
-    "prestart:dev": "NODE_ENV=development",
+    "prestart:dev": "cross-env NODE_ENV=development",
     "start:dev": "nest start --watch",
-    "prestart:debug": "NODE_ENV=development",
+    "prestart:debug": "cross-env NODE_ENV=development",
     "start:debug": "nest start --debug 0.0.0.0:9229 --watch",
     "start:prod": "node dist/main",
     "start:production": "npm run start:prod",
@@ -22,8 +23,13 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "npm rebuild bcrypt --build-from-source "
+    "test:e2e": "cross-env NODE_ENV_FILE_PATH='.env.test' jest --config ./test/jest-e2e.json",
+    "postinstall": "npm rebuild bcrypt --build-from-source"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   },
   "dependencies": {
     "@nestjs/common": "^6.10.14",
@@ -39,6 +45,7 @@
     "class-transformer": "0.2.3",
     "class-validator": "0.11.0",
     "compression": "1.7.4",
+    "cross-env": "7.0.0",
     "express-rate-limit": "5.1.1",
     "graphql": "14.6.0",
     "graphql-tools": "4.0.6",
@@ -54,6 +61,8 @@
   "devDependencies": {
     "@commitlint/cli": "8.3.5",
     "@commitlint/config-angular": "8.3.4",
+    "@commitlint/config-conventional": "8.3.4",
+    "@commitlint/prompt-cli": "8.3.5",
     "@nestjs/cli": "^6.13.2",
     "@nestjs/schematics": "^6.8.1",
     "@nestjs/testing": "6.11.7",
@@ -65,6 +74,7 @@
     "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
+    "chance": "1.1.4",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-import": "^2.19.1",

@@ -8,7 +8,7 @@ import database from './configurations/database';
         ConfigModule.forRoot({
             isGlobal: true,
             load: [database, app],
-            envFilePath: '.env' //`.env.${process.env.NODE_ENV || 'development'}` Considerations for testing purposes
+            envFilePath: process.env.NODE_ENV_FILE_PATH || '.env'
         }),
     ],
     exports: [ConfigModule]

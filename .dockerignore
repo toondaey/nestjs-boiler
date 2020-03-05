@@ -4,3 +4,4 @@ docker_compose
 /**/*.DS_Store
 .vscode
 .idea
+/coverage

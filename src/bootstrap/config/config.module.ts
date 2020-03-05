@@ -1,7 +1,7 @@
-import app from './configurations/app';
+import app from '../../config/app';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import database from './configurations/database';
+import database from '../../config/database';
 
 @Module({
     imports: [

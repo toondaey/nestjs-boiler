@@ -17,11 +17,11 @@ export class UserService {
         return this.userRepository.create(body);
     }
 
-    findById(id: string): Promise<User> {
+    findById(id: string): Promise<User | null> {
         return this.userRepository.findOne(id);
     }
 
-    findByEmail(email: string, options: FindOneOptions<User> = {}): Promise<User> {
+    findByEmail(email: string, options: FindOneOptions<User> = {}): Promise<User | null> {
         return this.userRepository.findOne({ email }, options);
     }
 
@@ -31,5 +31,9 @@ export class UserService {
 
     save(user: User): Promise<User> {
         return this.userRepository.save(user);
+    }
+
+    remove(user: User): Promise<User> {
+        return this.userRepository.remove(user);
     }
 }

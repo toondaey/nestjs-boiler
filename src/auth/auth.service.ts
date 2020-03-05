@@ -42,6 +42,11 @@ export class AuthService {
         return user && await bcrypt.compare(password, user.password) && user;
     }
 
+    /**
+     * Login authhentication.
+     * @param {User} user User entity
+     * @return {TokenResponse}
+     */
     async login(user: User): Promise<TokenResponse> {
         return this.tokenMeta(await this.jwtService.sign({ sub: user.id, }))
     }

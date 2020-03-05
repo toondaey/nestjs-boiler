@@ -2,7 +2,7 @@ import { plainToClass } from 'class-transformer';
 import { UserService } from '../../user/user.service';
 import { UserResponse } from '../../user/user.entity';
 import { CreateUserDto } from '../../user/dto/create-user.dto';
-import { Controller, UseInterceptors, ClassSerializerInterceptor, Post, Body, HttpException } from '@nestjs/common';
+import { Controller, UseInterceptors, ClassSerializerInterceptor, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
 
 @Controller('auth')
 export class RegisterController {
@@ -13,11 +13,10 @@ export class RegisterController {
     @Post('register')
     @UseInterceptors(ClassSerializerInterceptor)
     async create(@Body() body: CreateUserDto): Promise<UserResponse> {
-        console.log(body);
         const user = this.userService.create(body);
 
         if (await this.userService.findByEmail(body.email)) {
-            throw new HttpException({ message: 'User already exists.' }, 400);
+            throw new HttpException({ message: 'User already exists.' }, HttpStatus.BAD_REQUEST);
         }
 
         return plainToClass(UserResponse, {

@@ -12,18 +12,20 @@ export class DatabaseModule {
                 TypeOrmModule.forRootAsync({
                     inject: [ConfigService],
                     useFactory: async (configService: ConfigService) => {
+                        // We get the default configuration that the database configuration will be based on.
                         const defaultConnection = configService.get('database.default');
 
+                        // We create a new configuration.
                         const config = {
+                            migrationsRun: true,
                             type: defaultConnection,
                             host: configService.get(`database.connections.${defaultConnection}.host`),
                             port: configService.get(`database.connections.${defaultConnection}.port`),
                             username: configService.get(`database.connections.${defaultConnection}.user`),
                             password: configService.get(`database.connections.${defaultConnection}.password`),
-                            synchronize: configService.get(`database.connections.${defaultConnection}.synchronize`),
                             database: configService.get(`database.connections.${defaultConnection}.database`),
+                            synchronize: configService.get(`database.connections.${defaultConnection}.synchronize`),
                             insecureAuth: configService.get(`database.connections.${defaultConnection}.insecureAuth`),
-                            migrationsRun: true,
                             ...options,
                         };
 
@@ -34,6 +36,7 @@ export class DatabaseModule {
                             }
                         }
 
+                        // Return configuration.
                         return config;
                     }
                 }),

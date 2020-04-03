@@ -2,19 +2,19 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
-import { User } from '../models/user/user.entity';
+import { User } from '../user/model/user.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HashService } from '../utils/hash/hash.service';
-import { UserService } from '../models/user/user.service';
+import { UserService } from '../user/model/user.service';
 
 describe('AuthService', () => {
     let service: AuthService;
-    let userService: Partial<UserService> = {};
-    let jwtService: Partial<JwtService> = {};
-    let hashService: Partial<HashService> = {};
+    const userService: Partial<UserService> = {};
+    const jwtService: Partial<JwtService> = {};
+    const hashService: Partial<HashService> = {};
 
     beforeEach(async () => {
-        userService.findByEmail = jest.fn().mockImplementation(() => Promise.resolve({ password: '' }));
+        userService.findByEmailOrUsername = jest.fn().mockImplementation(() => Promise.resolve({ password: '' }));
 
         hashService.compare = jest.fn().mockImplementation(() => Promise.resolve(''));
 
@@ -45,7 +45,9 @@ describe('AuthService', () => {
     });
 
     it('should validate user', async () => {
-        expect(await service.validateUser('test@example.org', '')).not.toBeTruthy();
+        hashService.compare = jest.fn().mockImplementation(() => Promise.resolve(false));
+        userService.findByEmailOrUsername = jest.fn().mockImplementation(() => Promise.resolve({ password: ' ' }));
+        expect(service.validateUser('test@example.org', '')).rejects.toMatch('Unauthorized');
     });
 
     it('should login user and return authentication data', async () => {

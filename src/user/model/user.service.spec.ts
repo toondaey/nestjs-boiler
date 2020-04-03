@@ -4,18 +4,17 @@ import { UserService } from './user.service';
 import { plainToClass } from 'class-transformer';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UtilsModule } from '../../utils/utils.module';
 
 describe('UserService', () => {
     let service: UserService;
-    let chance: Chance.Chance = new Chance.Chance();
+    const chance: Chance.Chance = new Chance.Chance();
     let user: User;
-    let userRepository: { findOne?: Function } = {};
+    const userRepository: { findOne?: Function } = {};
 
     beforeEach(async () => {
         user = plainToClass(User, {
-            first_name: chance.first(),
-            last_name: chance.last(),
+            firstName: chance.first(),
+            lastName: chance.last(),
             email: chance.email(),
             password: chance.word(),
         });
@@ -39,10 +38,10 @@ describe('UserService', () => {
     });
 
     it('should test that users can be found via email', async () => {
-        expect(await service.findByEmail(user.email)).toMatchObject(
+        expect(await service.findByEmailOrUsername(user.email)).toMatchObject(
             expect.objectContaining({
-                first_name: user.first_name,
-                last_name: user.last_name,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 email: user.email,
             })
         );

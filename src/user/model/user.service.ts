@@ -25,7 +25,7 @@ export class UserService extends BaseService<User> {
      * @param {string} email Email
      * @param {FindOptions<User>} options FindOptions
      */
-    findByEmail(item: string): Promise<User | null> {
+    findByEmailOrUsername(item: string): Promise<User | null> {
         return this.findOne({
             where: [
                 { email: item },

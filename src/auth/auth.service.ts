@@ -6,8 +6,10 @@ import { HashService } from '../utils/hash/hash.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { TokenResponse, TokenResponseMeta } from './types/token-response.type';
 
+/**
+ * AuthService
+ */
 @Injectable()
-/** @class */
 export class AuthService {
     /**
      * Authentication service.
@@ -29,11 +31,12 @@ export class AuthService {
      * @param {String} email
      * @param {String} password
      * @returns {Promise<User>} Promise<User>
+     * @throws {UnauthorizedException}
      */
     async validateUser(username: string, password?: string): Promise<User> {
-        const user = await this.userService.findByEmail(username);
+        const user = await this.userService.findByEmailOrUsername(username);
 
-        if (!user && (!password && !this.hashService.compare(user.password, password))) {
+        if (!user || !password || !await this.hashService.compare(user.password, password)) {
             throw new UnauthorizedException();
         }
 

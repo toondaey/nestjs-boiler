@@ -1,0 +1,15 @@
+
+""" User schema """
+type UserSchema {
+    """ First name """
+    firstName: String!
+
+    """ Last name """
+    lastName: String
+
+    """ Email address """
+    email: EmailAddress!
+
+    """ Username """
+    username: String!
+}

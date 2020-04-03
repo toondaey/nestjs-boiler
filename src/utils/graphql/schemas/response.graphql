@@ -1,0 +1,30 @@
+
+""" Response interface """
+interface Response {
+    """ Status code """
+    status: Int!
+}
+
+""" Success response type """
+type SuccessResponse implements Response {
+    """ Status code """
+    status: Int!
+    """ Message """
+    message: String!
+}
+
+""" Error response type """
+type ErrorResponse implements Response {
+    """ Status code """
+    status: Int!
+    """ Error message """
+    error: String!
+}
+
+""" Status 422 response type """
+type Status422ErrorResponse implements Response {
+    """ Status code """
+    status: Int!
+    """ Error list """
+    error: [JSONObject]
+}

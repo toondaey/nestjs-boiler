@@ -1,13 +1,20 @@
-import { setup } from './bootstrap';
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { AppModule } from './bootstrap/app/app.module';
+import { configure } from "./configure";
+import { AppModule } from "./app.module"
+import { NestFactory } from "@nestjs/core";
+import { ConfigService } from "@nestjs/config";
 
+/**
+ * Bootstrap.
+ */
 async function bootstrap() {
-    const app = await setup(async () => await NestFactory.create(AppModule, { cors: true }));
+    const app = await NestFactory.create(AppModule, { cors: true });
 
-    const configService = app.get<ConfigService>(ConfigService);
+    // Config service to setup other global dependencies...
+    const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
+    await configure(app);
+
+    // Start app...
     await app.listen(configService.get('app.port'));
 }
 

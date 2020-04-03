@@ -1,30 +1,41 @@
-import { User } from '../user/user.entity';
+import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { plainToClass } from 'class-transformer';
-import { UserService } from '../user/user.service';
-import { JwtService, JwtModule } from '@nestjs/jwt';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from '../models/user/user.entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import TokenResponse from './interfaces/token-response.interface';
+import { HashService } from '../utils/hash/hash.service';
+import { UserService } from '../models/user/user.service';
 
 describe('AuthService', () => {
     let service: AuthService;
     let userService: Partial<UserService> = {};
+    let jwtService: Partial<JwtService> = {};
+    let hashService: Partial<HashService> = {};
 
     beforeEach(async () => {
+        userService.findByEmail = jest.fn().mockImplementation(() => Promise.resolve({ password: '' }));
+
+        hashService.compare = jest.fn().mockImplementation(() => Promise.resolve(''));
+
+        jwtService.sign = jest.fn().mockImplementation(() => Promise.resolve(''));
+
         const module: TestingModule = await Test.createTestingModule({
-            providers: [AuthService, UserService, ConfigService,
+            providers: [AuthService, ConfigService,
                 {
-                    provide: getRepositoryToken(User),
-                    useValue: { findOne() { return { email:'test@example.org', password: '' }; } }
+                    provide: UserService,
+                    useValue: userService
+                },
+                {
+                    provide: JwtService,
+                    useValue: jwtService
+                },
+                {
+                    provide: HashService,
+                    useValue: hashService
                 }
-            ],
-            imports: [JwtModule]
-        })
-            .overrideProvider(JwtService)
-            .useValue({ sign() { return ''; }})
-            .compile();
+            ]
+        }).compile();
 
         service = module.get<AuthService>(AuthService);
     });
@@ -39,6 +50,13 @@ describe('AuthService', () => {
 
     it('should login user and return authentication data', async () => {
         expect(await service.login(plainToClass(User, { email: 'test@example.org', password: '' })))
-            .toEqual(expect.objectContaining({ type: expect.any(String), token: expect.any(String) }));
+            .toEqual(
+                expect.objectContaining({
+                    _meta: {
+                        type: expect.any(String),
+                    },
+                    token: expect.any(String),
+                })
+            );
     });
 });

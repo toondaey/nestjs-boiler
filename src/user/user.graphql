@@ -1,0 +1,69 @@
+""" `User` type """
+type User implements Response {
+    """ Status code """
+    status: Int!
+    """ UserSchema """
+    response: UserSchema
+}
+
+"""
+Mutation
+"""
+type Mutation{
+"""
+Could return:
+1. type `User` on `Response` interface
+example:
+```graphql
+    registerUser(input: {...}) {
+        status
+        ## Other fields
+        ...on User {
+            ## fields
+        }
+    }
+```
+2. type `Status422ErrorResponse` on `Response` interface
+example:
+```graphql
+    createNeed(input: {...}) {
+        status
+        ## Other fields
+        ... on Status422ErrorResponse {
+            ## fields
+            error {
+                [fieldName]: [...errors]
+            }
+        }
+    }
+```
+"""
+	registerUser(
+		"""
+		New user input data.
+		"""
+		input: UserRegistrationInput
+	): Response
+}
+
+"""
+User registration data
+"""
+input UserRegistrationInput {
+	"""
+	Username (required).
+	"""
+	username: String!
+	"""
+	Email address (required).
+	"""
+	email: EmailAddress!
+	"""
+	Password (required).
+	"""
+	password: String!
+	"""
+	First name (reqired).
+	"""
+	firstName: String!
+}

@@ -1,17 +1,10 @@
-/** @type bcypt  */
-import * as bcrypt  from 'bcrypt';
-/** @type {{ JwtService: JwtServic}} */
 import { JwtService } from '@nestjs/jwt';
-/** @type {{ User: User }} */
-import { User } from '../user/user.entity';
-/** @type {{ Injectable: Injectable }} */
-import { Injectable } from '@nestjs/common';
-/** @type {{ ConfigService: ConfigService }} */
 import { ConfigService } from '@nestjs/config';
-/** @type {{ UserService: UserService }} */
-import { UserService } from '../user/user.service';
-/** @type {{ TokenResponse: TokenResponse }} */
-import TokenResponse from './interfaces/token-response.interface';
+import { User } from '../user/model/user.entity';
+import { UserService } from "../user/model/user.service";
+import { HashService } from '../utils/hash/hash.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { TokenResponse, TokenResponseMeta } from './types/token-response.type';
 
 @Injectable()
 /** @class */
@@ -23,6 +16,7 @@ export class AuthService {
      * @param {ConfigService} configService ConfigService
      */
     constructor(
+        private readonly hashService: HashService,
         private readonly jwtService: JwtService,
         private readonly userService: UserService,
         private readonly configService: ConfigService
@@ -36,10 +30,14 @@ export class AuthService {
      * @param {String} password
      * @returns {Promise<User>} Promise<User>
      */
-    async validateUser(email: string, password: string): Promise<User> {
-        const user = await this.userService.findByEmail(email);
+    async validateUser(username: string, password?: string): Promise<User> {
+        const user = await this.userService.findByEmail(username);
 
-        return user && await bcrypt.compare(password, user.password) && user;
+        if (!user && (!password && !this.hashService.compare(user.password, password))) {
+            throw new UnauthorizedException();
+        }
+
+        return user;
     }
 
     /**
@@ -48,7 +46,7 @@ export class AuthService {
      * @return {TokenResponse}
      */
     async login(user: User): Promise<TokenResponse> {
-        return this.tokenMeta(await this.jwtService.sign({ sub: user.id, }))
+        return { token: await this.jwtService.sign({ sub: user.id, }), ...this.tokenMeta() };
     }
 
     /**
@@ -56,12 +54,13 @@ export class AuthService {
      * @param {String} token Token
      * @returns {TokenResponse}
      */
-    tokenMeta(token: string): TokenResponse {
+    tokenMeta(): TokenResponseMeta {
         return {
-            type: 'bearer',
-            token,
-            expiresIn: this.configService.get('app.jwt.expiresIn'),
-            validFor: this.configService.get('app.jwt.maxAge'),
+            _meta: {
+                type: 'bearer',
+                expiresIn: this.configService.get('app.jwt.expiresIn'),
+                validFor: this.configService.get('app.jwt.maxAge'),
+            },
         };
     }
 }

@@ -1,29 +1,29 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
-import { UsersModule } from '../user/users.module';
-import { LoginController } from './login/login.controller';
+import { PassportModule } from '@nestjs/passport';
+import { JwtConfigService } from './jwt-config.service';
 import { LocalStrategy } from './strategies/local.strategy';
-import { RegisterController } from './register/register.controller';
-import { JwtStrategy } from './strategies/bearer-authenticate.strategy';
-import { TokenRefreshStrategy } from './strategies/bearer-refresh.strategy';
+import { UserModelModule } from '../user/model/user.module';
+import { AuthController } from './controllers/auth.controller';
+import { AuthResolver } from './graphql/resolvers/auth.resolver';
+import { BearerRefreshStrategy } from './strategies/bearer-refresh.strategy';
+import { BearerAuthenticationStrategy } from './strategies/bearer-authenticate.strategy';
 
 @Module({
     imports: [
-        UsersModule,
-        JwtModule.registerAsync({
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get('app.jwt.key'),
-                signOptions: {
-                    expiresIn: configService.get('app.jwt.expiresIn'),
-                    issuer: configService.get('app.url'),
-                }
-            }),
-            inject: [ConfigService],
-        })
+        PassportModule,
+        UserModelModule,
+        JwtModule.registerAsync({ useClass: JwtConfigService }),
     ],
-    controllers: [LoginController, RegisterController],
-    providers: [AuthService, LocalStrategy, JwtStrategy, TokenRefreshStrategy]
+    providers: [
+        AuthService,
+        AuthResolver,
+        LocalStrategy,
+        BearerRefreshStrategy,
+        BearerAuthenticationStrategy,
+    ],
+    exports: [AuthService],
+    controllers: [AuthController],
 })
 export class AuthModule {}

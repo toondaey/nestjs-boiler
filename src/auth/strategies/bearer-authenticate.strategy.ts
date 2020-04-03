@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '../../user/user.entity';
 import { ConfigService } from '@nestjs/config';
-import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserService } from '../..//user/user.service';
+import { PassportStrategy } from '@nestjs/passport';
+import { BearerStrategy } from './abstract/bearer.abstract';
+import { UserService } from '../../user/model/user.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'bearer-authentication') {
+export class BearerAuthenticationStrategy extends BearerStrategy(PassportStrategy(Strategy, 'bearer-authentication')) {
     constructor(
         private readonly configService: ConfigService,
         private readonly userService: UserService
@@ -19,9 +19,5 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'bearer-authenticati
                 maxAge: configService.get('app.jwt.maxAge')
             }
         });
-    }
-
-    async validate(payload: { id: string }): Promise<User> {
-        return await this.userService.findById(payload.id);
     }
 }

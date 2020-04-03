@@ -1,0 +1,77 @@
+"""
+Login mutation.
+"""
+type Login implements Response{
+	"""
+	Status code
+	"""
+	status: Int!
+	"""
+	Response content
+	"""
+	response: Token!
+}
+
+"""
+Token data.
+"""
+type Token{
+	"""
+	Authentication token string.
+	"""
+	token: String!
+	"""
+	Token Meta data
+	"""
+	_meta: TokenMeta!
+}
+
+"""
+Token meta data
+"""
+type TokenMeta{
+	"""
+	Token type.
+	"""
+	type: String!
+	"""
+	Validity period (period after which token can no longer be used).
+	"""
+	validFor: String!
+	"""
+	Token expiration time. Can still be renewed while in validity period.
+	"""
+	expiresIn: String!
+}
+
+"""
+Login credentials.
+"""
+input CredentialsInput {
+	"""
+	Username i.e. email/username.
+	"""
+	username: String!
+	"""
+	Password.
+	"""
+	password: String!
+}
+
+type Query {
+"""
+Could return:
+1. type `Login` on `Response` interface
+example:
+```graphql
+login(credentials: {...}) {
+    status
+    ## Other fields
+    ...on Login {
+        ## fields
+    }
+}
+```
+"""
+	login(credentials: CredentialsInput!): Response
+}
